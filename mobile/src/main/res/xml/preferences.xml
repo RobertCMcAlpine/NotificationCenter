@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="@string/shared_pref_key"
+        android:title="@string/notification_settings_screen_title">
+        <EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:enabled="true"
+            android:key="@string/notification_limit_key"
+            android:numeric="integer"
+            android:title="@string/notification_limit_title"
+            android:summary="@string/notification_limit_summary">
+        </EditTextPreference>
+        <Preference
+            android:title="@string/delete_title"
+            android:summary="@string/delete_summary"
+            android:key="@string/delete_key"
+            android:enabled="true">
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

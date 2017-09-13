@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="max_notification_list_entries">
+        <item>10 notifications</item>
+        <item>15 notifications</item>
+        <item>20 notifications</item>
+        <item>25 notifications</item>
+        <item>30 notifications</item>
+        <item>35 notifications</item>
+        <item>40 notifications</item>
+        <item>45 notifications</item>
+        <item>50 notifications</item>
+    </string-array>
+    <string-array name="max_notification_list_values">
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+        <item>35</item>
+        <item>40</item>
+        <item>45</item>
+        <item>50</item>
+    </string-array>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/frame_layout"
+        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:background="#434343"
+        app:layout_box="left|bottom|right">
+
+        <TextView
+            android:id="@+id/wearable_listview_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:paddingTop="26dp"
+            android:gravity="bottom"
+            android:fontFamily="sans-serif-light"
+            android:textSize="16sp"
+            android:text="@string/notifications_title">
+        </TextView>
+
+        <android.support.wearable.view.WearableListView
+            android:id="@+id/wearable_listview_container"
+            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:scrollbars="none"
+            android:dividerHeight="0dp">
+        </android.support.wearable.view.WearableListView>
+
+    </RelativeLayout>
+</android.support.wearable.view.BoxInsetLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Notification History</string>
+    <string name="my_analog_name">Notification History</string>
+
+    <string name="notifications_title">Notification History</string>
+    <string name="notification_default_value">LIMIT</string>
+
+    <string name="filename">notifications.ser</string>\
+    <string name="limit_key">LIMITKEY</string>
+</resources>
