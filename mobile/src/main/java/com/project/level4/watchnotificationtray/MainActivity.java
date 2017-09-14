@@ -3,11 +3,17 @@ package com.project.level4.watchnotificationtray;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +23,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.Wearable;
 
-;
+;import java.util.ArrayList;
+import java.util.List;
+
 /**
  * MainActivity is responsible for preference fragment (Settings screen), and sending changes made to
  * the wearable companion app
@@ -27,6 +35,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
         GoogleApiClient.OnConnectionFailedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private GoogleApiClient googleClient;
+    private static List<ApplicationData> appInfoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +51,40 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        initialiseNotificationManagment();
     }
+
+    private void initialiseNotificationManagment(){
+        PackageManager pm = getPackageManager();
+        List<ApplicationInfo> apps = pm.getInstalledApplications(0);
+        List<ApplicationInfo> installedApps = new ArrayList<ApplicationInfo>();
+
+        List<ApplicationData> mInstalledAppInfo;
+        mInstalledAppInfo = new ArrayList<ApplicationData>();
+
+        for(ApplicationInfo app : apps) {
+            //checks for flags; if flagged, check if updated system app
+            if((app.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
+                installedApps.add(app);
+                //it's a system app, not interested
+            } else if ((app.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                //Discard this one
+                //in this case, it should be a user-installed app
+            } else {
+                installedApps.add(app);
+            }
+        }
+
+        for (int i=0; i<installedApps.size(); i++){
+            String title = pm.getApplicationLabel(installedApps.get(i)).toString();
+            String pkg = installedApps.get(i).packageName;
+            Drawable icon = pm.getApplicationIcon(installedApps.get(i));
+            mInstalledAppInfo.add(new ApplicationData(title, pkg, icon));
+        }
+        appInfoList = mInstalledAppInfo;
+    }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -102,7 +144,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
                     new AlertDialog.Builder(getActivity())
                             .setTitle(getResources().getString(R.string.delete_dialog_title))
                             .setMessage(getResources().getString(R.string.delete_dialog_text))
-                            .setPositiveButton(R.string.delete_pos, new DialogInterface.OnClickListener() {
+                            .setPositiveButton(R.string.pos, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     DataMap dataMap = new DataMap();
                                     dataMap.putString("package", "com.project.level4.watchnotificationtray");
@@ -114,7 +156,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
                                     ((MainActivity)getActivity()).deleteNotifications(dataMap);
                                 }
                             })
-                            .setNegativeButton(R.string.delete_neg, new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.neg, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // do nothing
                                 }
@@ -124,6 +166,53 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
                     return false;
                 }
             });
+
+            Preference manage = findPreference(getResources().getString(R.string.notification_manager_key));
+            manage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    getFragmentManager().beginTransaction().replace(android.R.id.content, new MyNotificationManagementFragment(), "PreferenceFragment").commit();
+                    PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), getResources().getString(R.string.shared_pref_key),
+                            Context.MODE_PRIVATE, R.xml.preferences, false);
+                    return false;
+                }
+            });
+        }
+    }
+
+    public static class MyNotificationManagementFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onCreate(final Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            PreferenceManager.setDefaultValues(getActivity(),
+                    R.xml.notificationmanagement, false);
+            addPreferencesFromResource( R.xml.notificationmanagement);
+
+            initialise();
+        }
+
+        public void initialise(){
+            PreferenceScreen preferenceScreen = this.getPreferenceScreen();
+
+            // create preferences manually
+            PreferenceCategory preferenceCategory = new PreferenceCategory(preferenceScreen.getContext());
+            preferenceCategory.setTitle("App Notification Manager");
+            //do anything you want with the preferencecategory here
+            preferenceScreen.addPreference(preferenceCategory);
+
+            for (int i=0; i<appInfoList.size(); i++){
+                if (!appInfoList.get(i).getAppPkg().contentEquals(getResources().getString(R.string.package_name))) {
+                    SwitchPreference preference = new SwitchPreference(preferenceScreen.getContext());
+                    preference.setTitle(appInfoList.get(i).getAppName());
+                    preference.setIcon(appInfoList.get(i).getAppIcon());
+                    preferenceCategory.addPreference(preference);
+                }
+            }
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
         }
     }
 

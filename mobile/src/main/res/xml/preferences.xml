@@ -3,15 +3,12 @@
     <PreferenceCategory
         android:key="@string/shared_pref_key"
         android:title="@string/notification_settings_screen_title">
-        <EditTextPreference
-            android:defaultValue="10"
-            android:inputType="number"
-            android:enabled="true"
-            android:key="@string/notification_limit_key"
-            android:numeric="integer"
-            android:title="@string/notification_limit_title"
-            android:summary="@string/notification_limit_summary">
-        </EditTextPreference>
+        <Preference
+            android:title="@string/all_apps_manager_title"
+            android:summary="@string/all_apps_manager_info"
+            android:key="@string/notification_manager_key"
+            android:enabled="true">
+        </Preference>
         <Preference
             android:title="@string/delete_title"
             android:summary="@string/delete_summary"

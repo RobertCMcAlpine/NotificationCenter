@@ -7,14 +7,19 @@
     <string name="notification_settings_screen_title">Settings</string>
     <string name="notification_service">NotificationServiceListener</string>
     <string name="notification_receiver">NotificationBroadcastReceiver</string>
-    <string name="notification_limit_key">LIMITKEY</string>
-    <string name="delete_key">DELETEKEY</string>
     <string name="delete_title">Delete Notifications</string>
     <string name="delete_summary">Clear all notifications within the Notification History wear app</string>
     <string name="shared_pref_key">"pref_key_notification_settings"</string>
-    <string name="delete_pos">Yes</string>
-    <string name="delete_neg">No</string>
+    <string name="pos">Yes</string>
+    <string name="neg">No</string>
     <string name="delete_dialog_title">Delete Notifications</string>
     <string name="delete_dialog_text">Are you sure you want to delete all notifications?</string>
+    <string name="all_apps_manager_title">App Notification Manager</string>
+    <string name="all_apps_manager_info">Manage which apps send notifications to the smartwatch</string>
+    <string name="package_name">com.project.level4.watchnotificationtray</string>
+
+    <string name="notification_manager_key">MANAGEKEY</string>
+    <string name="notification_limit_key">LIMITKEY</string>
+    <string name="delete_key">DELETEKEY</string>
 
 </resources>
