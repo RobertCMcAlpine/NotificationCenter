@@ -1,6 +1,5 @@
 package com.project.level4.watchnotificationtray;
 
-import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 
 /**

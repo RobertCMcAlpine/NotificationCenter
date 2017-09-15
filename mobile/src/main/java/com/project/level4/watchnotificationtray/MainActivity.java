@@ -17,6 +17,8 @@ import android.preference.SwitchPreference;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,7 +46,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment(), "PreferenceFragment").commit();
         PreferenceManager.setDefaultValues(this, getResources().getString(R.string.shared_pref_key),
                 Context.MODE_PRIVATE, R.xml.preferences, false);
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+//        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         googleClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -52,10 +54,10 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        initialiseNotificationManagment();
+        initialiseNotificationManagement();
     }
 
-    private void initialiseNotificationManagment(){
+    private void initialiseNotificationManagement(){
         PackageManager pm = getPackageManager();
         List<ApplicationInfo> apps = pm.getInstalledApplications(0);
         List<ApplicationInfo> installedApps = new ArrayList<ApplicationInfo>();
@@ -86,7 +88,6 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
     }
 
 
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getResources().getString(R.string.notification_limit_key))) {
             DataMap dataMap = new DataMap();
@@ -171,7 +172,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
             manage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    getFragmentManager().beginTransaction().replace(android.R.id.content, new MyNotificationManagementFragment(), "PreferenceFragment").commit();
+                    getFragmentManager().beginTransaction().replace(android.R.id.content, new MyNotificationManagementFragment(), "PreferenceFragment").addToBackStack("Settings").commit();
                     PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), getResources().getString(R.string.shared_pref_key),
                             Context.MODE_PRIVATE, R.xml.preferences, false);
                     return false;
@@ -180,15 +181,25 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
         }
     }
 
-    public static class MyNotificationManagementFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class MyNotificationManagementFragment extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             PreferenceManager.setDefaultValues(getActivity(),
-                    R.xml.notificationmanagement, false);
+                    R.xml.notificationmanagement, true);
             addPreferencesFromResource( R.xml.notificationmanagement);
-
             initialise();
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            // remove dividers
+            View rootView = getView();
+            ListView list = (ListView) rootView.findViewById(android.R.id.list);
+            list.setDivider(null);
+
         }
 
         public void initialise(){
@@ -197,22 +208,38 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
             // create preferences manually
             PreferenceCategory preferenceCategory = new PreferenceCategory(preferenceScreen.getContext());
             preferenceCategory.setTitle("App Notification Manager");
-            //do anything you want with the preferencecategory here
             preferenceScreen.addPreference(preferenceCategory);
 
+            // read shared preferences and use stored vales (if they exist)
             for (int i=0; i<appInfoList.size(); i++){
-                if (!appInfoList.get(i).getAppPkg().contentEquals(getResources().getString(R.string.package_name))) {
+                final String appPkg = appInfoList.get(i).getAppPkg();
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                boolean defaultValue = true;
+                boolean savedValue = sharedPref.getBoolean(appPkg, defaultValue);
+                if (!appPkg.contentEquals(getResources().getString(R.string.package_name))) {
                     SwitchPreference preference = new SwitchPreference(preferenceScreen.getContext());
                     preference.setTitle(appInfoList.get(i).getAppName());
                     preference.setIcon(appInfoList.get(i).getAppIcon());
+                    if (!savedValue){
+                        preference.setChecked(false);
+                    } else {
+                        preference.setChecked(true);
+                    }
                     preferenceCategory.addPreference(preference);
+
+                    // write to shared preferences if change occurs
+                    preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putBoolean(appPkg, (boolean) newValue);
+                            editor.commit();
+                            return true;
+                        }
+                    });
                 }
             }
-        }
-
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
         }
     }
 
