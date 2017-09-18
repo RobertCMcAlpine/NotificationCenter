@@ -2,12 +2,13 @@ package com.project.level4.watchnotificationtray;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
@@ -60,7 +61,6 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
             PreferenceManager.setDefaultValues(this, getResources().getString(R.string.shared_pref_key),
                     Context.MODE_PRIVATE, R.xml.preferences, false);
         }
-
     }
 
     private void initialiseNotificationManagement() {
@@ -160,7 +160,6 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-
             // remove dividers
             View rootView = getView();
             ListView list = (ListView) rootView.findViewById(android.R.id.list);
@@ -179,7 +178,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
             // read shared preferences and use stored vales (if they exist)
             for (int i = 0; i < appInfoList.size(); i++) {
                 final String appPkg = appInfoList.get(i).getAppPkg();
-                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(getResources().getString(R.string.shared_preferences_name), MODE_PRIVATE);
                 boolean defaultValue = true;
                 boolean savedValue = sharedPref.getBoolean(appPkg, defaultValue);
                 if (!appPkg.contentEquals(getResources().getString(R.string.package_name))) {
@@ -197,7 +196,7 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
                     preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                         @Override
                         public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences sharedPref = getActivity().getSharedPreferences(getResources().getString(R.string.shared_preferences_name), MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putBoolean(appPkg, (boolean) newValue);
                             editor.commit();

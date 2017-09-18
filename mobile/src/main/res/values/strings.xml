@@ -24,4 +24,5 @@
     <string name="notification_limit_key">LIMITKEY</string>
     <string name="delete_key">DELETEKEY</string>
 
+    <string name="shared_preferences_name">NOTIFICATIONPREFERENCES</string>
 </resources>

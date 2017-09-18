@@ -38,7 +38,10 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.SurfaceHolder;
+import android.view.WindowManager;
 
 import java.lang.ref.WeakReference;
 import java.util.TimeZone;
@@ -301,10 +304,19 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
             String stringCounterSmall = String.valueOf(small);
             String stringCounterBig = String.valueOf(big);
 
-            createButton(centerX, centerY+66f);
+            int hRes = getScreenResolution("h", getApplicationContext());
 
-            canvas.drawText(stringCounterSmall,centerX+5f, centerY+66f, notificationPaint);
-            canvas.drawText(stringCounterBig,centerX-9f, centerY+66f, notificationPaint);
+            if (hRes < 300){
+                createButton(centerX, centerY+66f);
+                canvas.drawText(stringCounterSmall,centerX+5f, centerY+66f, notificationPaint);
+                canvas.drawText(stringCounterBig,centerX-9f, centerY+66f, notificationPaint);
+            } else if (hRes >300){
+                createButton(centerX, centerY+74f);
+                canvas.drawText(stringCounterSmall,centerX+5f, centerY+74f, notificationPaint);
+                canvas.drawText(stringCounterBig,centerX-9f, centerY+74f, notificationPaint);
+            }
+
+
         }
 
         // button positioned on notification counter.
@@ -398,5 +410,20 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
                 }
             }
         }
+    }
+
+    private static int getScreenResolution(String det, Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+
+        if (det.contentEquals("w")) {
+            return width;
+        } else
+            return height;
     }
 }
