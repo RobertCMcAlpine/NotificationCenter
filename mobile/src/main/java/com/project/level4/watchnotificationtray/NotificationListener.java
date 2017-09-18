@@ -30,7 +30,7 @@ import java.io.ByteArrayOutputStream;
  * This service is always running. App does not have to be running in foreground for the service logic
  * to function. Allows notifications to be sent to wearable without mobile application to be running in foreground
  */
-public class NotificationService extends NotificationListenerService implements GoogleApiClient.ConnectionCallbacks,
+public class NotificationListener extends NotificationListenerService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
     private GoogleApiClient googleClient;
 
@@ -118,7 +118,7 @@ public class NotificationService extends NotificationListenerService implements 
            //Requires a new thread to avoid blocking the UI
            new SendToDataLayerThread(WEARABLE_DATA_PATH, dataMap, googleClient).start();
        } else {
-           //Log.i("NotificationService", "Blocked " + sbn.getPackageName());
+           //Log.i("NotificationListener", "Blocked " + sbn.getPackageName());
        }
    }
 
