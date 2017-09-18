@@ -18,6 +18,8 @@
     <string name="all_apps_manager_info">Manage which apps send notifications to the smartwatch</string>
     <string name="package_name">com.project.level4.watchnotificationtray</string>
 
+    <string name="active_fragment_key">fragment key</string>
+
     <string name="notification_manager_key">MANAGEKEY</string>
     <string name="notification_limit_key">LIMITKEY</string>
     <string name="delete_key">DELETEKEY</string>
