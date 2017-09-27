@@ -45,8 +45,8 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String title = menuItemsLL.get(getAdapterPosition()).getTitle();
-                    String text = menuItemsLL.get(getAdapterPosition()).getText();
+                    String title = menuItemsLL.get(getAdapterPosition()-1).getTitle();
+                    String text = menuItemsLL.get(getAdapterPosition()-1).getText();
                     Intent notificationIntent = new Intent(context, WearNotificationActivity.class);
                     if (title != null) {
                         notificationIntent.putExtra("title", title);
