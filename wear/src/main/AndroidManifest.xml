@@ -12,7 +12,7 @@
         android:icon="@drawable/ic_notification_history"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Black"
+        android:theme="@android:style/ThemeOverlay.Material.Dark"
         android:name=".MyApplication">
         <activity
             android:name=".WearMainActivity"

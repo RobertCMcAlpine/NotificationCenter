@@ -14,14 +14,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.wearable.view.WearableListView;
-import android.widget.TextView;
+
+import android.support.wearable.view.WearableRecyclerView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -40,25 +39,20 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 public class WearMainActivity extends Activity {
-    private TextView mHeader;
     private static final int TIMEOUT_MS = 1000;
     private static final String ACTION = "NOTIFICATION";
-    private static final String ACTIONCOUNTER = "COUNTER";
+//    private static final String ACTIONCOUNTER = "COUNTER";
     private static final String ACTIONPULL = "PULLREQUEST";
     static boolean active = false;
 
     private NotificationReceiver notificationReceiver;
     private LinkedList<NotificationObject> notificationLL;
-    private int limit = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        Log.i("WearMainActivity", "starting application...");
 
-        SharedPreferences sharedPref = MyApplication.preferences;
-        limit = Integer.parseInt(sharedPref.getString(getResources().getString(R.string.limit_key), "10"));
         notificationLL = new LinkedList<NotificationObject>();
 
         readNotificationsFromInternalStorage();
@@ -88,6 +82,13 @@ public class WearMainActivity extends Activity {
         super.onResume();
         active = true;
         broadcastPullRequest();
+    }
+
+    private void updateUI(){
+        WearableRecyclerView wearableRecyclerView = (WearableRecyclerView)findViewById(R.id.recycler_container_view);
+        wearableRecyclerView.setCenterEdgeItems(true);
+        HomeAdapter mAdapter = new HomeAdapter(this, notificationLL);
+        wearableRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -193,16 +194,6 @@ public class WearMainActivity extends Activity {
                         notificationObject.setText(dataMap.getString("text"));
                     }
 
-                    // check settings update
-                     if (dataMap.getString("limit") != null) {
-                         String sLimit = dataMap.getString("limit");
-                         limit = Integer.parseInt(sLimit);
-                         SharedPreferences sharedPref = MyApplication.preferences;
-                         SharedPreferences.Editor editor = sharedPref.edit();
-                         editor.putString(getResources().getString(R.string.limit_key), Integer.toString(limit));
-                         editor.commit();
-                     }
-
                     if (dataMap.getString("delete") != null){
                         notificationLL = new LinkedList<NotificationObject>();
 //                        Log.i("NotificationReceiver", "Notifications deleted");
@@ -219,22 +210,8 @@ public class WearMainActivity extends Activity {
                     }
 
                 }
-//                Log.i("WearMainActivity","Created NotificationObject");
             }
         }
-    }
-
-
-    private void updateUI(){
-        applyLimit();
-        mHeader = (TextView) findViewById(R.id.wearable_listview_header);
-        WearableListView wearableListView =
-                (WearableListView) findViewById(R.id.wearable_listview_container);
-        WearableAdapter mAdapter = new WearableAdapter(this, notificationLL);
-        wearableListView.setAdapter(mAdapter);
-        wearableListView.setClickListener(mClickListener);
-        wearableListView.addOnScrollListener(mOnScrollListener);
-        wearableListView.setOverScrollMode(0);
     }
 
     public void getBitmapAsyncTask(final Context context, final DataMap map, final NotificationObject notification) {
@@ -278,68 +255,4 @@ public class WearMainActivity extends Activity {
             }
         }.execute(notification);
     }
-
-    private void applyLimit(){
-       while(limit < notificationLL.size()){
-            notificationLL.removeLast();
-        }
-    }
-
-    // Handle our Wearable List's click events
-    private WearableListView.ClickListener mClickListener =
-            new WearableListView.ClickListener() {
-                @Override
-                public void onClick(WearableListView.ViewHolder viewHolder) {
-                    String title = notificationLL.get(viewHolder.getLayoutPosition()).getTitle();
-                    String text = notificationLL.get(viewHolder.getLayoutPosition()).getText();
-                    Intent notificationIntent = new Intent(getApplicationContext(), WearNotificationActivity.class);
-                    if (title != null) {
-                        notificationIntent.putExtra("title", title);
-                    }
-                    if (text != null) {
-                        notificationIntent.putExtra("text", text);
-                    }
-                    startActivity(notificationIntent);
-                }
-
-                @Override
-                public void onTopEmptyRegionClick() {}
-            };
-
-
-    // The following code ensures that the title scrolls as the user scrolls up
-    // or down the list
-    private WearableListView.OnScrollListener mOnScrollListener =
-            new WearableListView.OnScrollListener() {
-                @Override
-                public void onAbsoluteScrollChange(int i) {
-                    // Only scroll the title up from its original base position
-                    // and not down.
-                    if (i > 0) {
-                        mHeader.setY(-i);
-                    }
-                }
-
-                @Override
-                public void onScroll(int i) {
-                    // If user scrolls past top, the notification counter is reset
-                    if (i < 0){
-                        Intent counterIntent = new Intent();
-                        counterIntent.setAction(ACTIONCOUNTER);
-                        counterIntent.putExtra("counter", 0);
-                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(counterIntent);
-                    }
-                }
-
-                @Override
-                public void onScrollStateChanged(int i) {
-                    // Placeholder
-                }
-
-                @Override
-                public void onCentralPositionChanged(int i) {
-                    // Placeholder
-                }
-
-            };
 }
