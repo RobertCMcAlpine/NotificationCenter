@@ -2,6 +2,7 @@ package com.project.level4.watchnotificationtray;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.wearable.view.CircledImageView;
@@ -37,16 +38,20 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
     public class ItemHolder extends WearableRecyclerView.ViewHolder {
         public TextView title;
         public CircledImageView icon;
+        public View notificationView;
 
         public ItemHolder(View view) {
             super(view);
+            notificationView = view;
             title = (TextView) view.findViewById(R.id.name);
             icon = (CircledImageView) view.findViewById(R.id.circle);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    menuItemsLL.get((getAdapterPosition())-1).readNotification();
                     String title = menuItemsLL.get(getAdapterPosition()-1).getTitle();
                     String text = menuItemsLL.get(getAdapterPosition()-1).getText();
+                    ((WearMainActivity) context).setReadReceipt(getAdapterPosition()-1);
                     Intent notificationIntent = new Intent(context, WearNotificationActivity.class);
                     if (title != null) {
                         notificationIntent.putExtra("title", title);
@@ -59,7 +64,15 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
             });
         }
 
+        public void setUnreadColor(){
+            itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_color, null));
+        }
+
+        public void setReadColor(){
+            itemView.setBackgroundColor(context.getResources().getColor(android.R.color.transparent, null));
+        }
     }
+
 
     public HomeAdapter(Context context, LinkedList<NotificationObject> menuItemsLinkedList) {
         this.context = context;
@@ -94,7 +107,9 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
                 vh.title.setText(item.getTitle());
                 Drawable drawableIcon = new BitmapDrawable(context.getResources(), item.getIcon());
                 vh.icon.setImageDrawable(drawableIcon);
-
+                if (!item.readReceipt()){ ((ItemHolder) holder).setUnreadColor();}
+                else if (item.readReceipt()){ ((ItemHolder) holder).setReadColor();}
+                else { ((ItemHolder) holder).setUnreadColor();}
             } else if (holder instanceof HeaderViewHolder) {
                 HeaderViewHolder vh = (HeaderViewHolder) holder;
             }
@@ -119,6 +134,10 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
 
     private boolean isPositionHeader(int position) {
         return position == 0;
+    }
+
+    public interface ReadReceiptInterface {
+        void setReadReceipt(int position);
     }
 
 }

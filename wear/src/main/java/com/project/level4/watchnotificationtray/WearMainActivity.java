@@ -38,7 +38,7 @@ import java.io.StreamCorruptedException;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
-public class WearMainActivity extends Activity {
+public class WearMainActivity extends Activity implements HomeAdapter.ReadReceiptInterface{
     private static final int TIMEOUT_MS = 1000;
     private static final String ACTION = "NOTIFICATION";
 //    private static final String ACTIONCOUNTER = "COUNTER";
@@ -54,7 +54,6 @@ public class WearMainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         notificationLL = new LinkedList<NotificationObject>();
-
         readNotificationsFromInternalStorage();
 
         if (!notificationLL.isEmpty()) {
@@ -166,6 +165,12 @@ public class WearMainActivity extends Activity {
         Intent pullIntent = new Intent();
         pullIntent.setAction(ACTIONPULL);
         LocalBroadcastManager.getInstance(this).sendBroadcast(pullIntent);
+    }
+
+    @Override
+    public void setReadReceipt(int position) {
+        notificationLL.get(position).readNotification();
+        updateUI();
     }
 
     public class NotificationReceiver extends BroadcastReceiver {

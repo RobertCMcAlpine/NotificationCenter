@@ -2,4 +2,6 @@
 <resources>
     <color name="analog_background">#000000</color>
     <color name="analog_hands">#cccccc</color>
+    <color name="read_color">#263238</color>
+    <color name="unread_color">#424242</color>
 </resources>

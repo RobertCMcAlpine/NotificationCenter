@@ -23,6 +23,7 @@ public class NotificationObject implements Serializable{
     private String title;
     private String text;
     private Bitmap icon;
+    private boolean read;
 
 
     public NotificationObject() {
@@ -30,6 +31,7 @@ public class NotificationObject implements Serializable{
         this.title = null;
         this.text = null;
         this.icon = null;
+        this.read = false;
 
 
     }
@@ -50,6 +52,8 @@ public class NotificationObject implements Serializable{
         return this.icon;
     }
 
+    public boolean readReceipt(){ return this.read; }
+
     public void setPack(String pack) {
         this.pack = pack;
     }
@@ -65,6 +69,8 @@ public class NotificationObject implements Serializable{
     public void setIcon(Bitmap icon) {
         this.icon = icon;
     }
+
+    public void readNotification(){ this.read = true;}
 
 
     protected class BitmapDataObject implements Serializable {

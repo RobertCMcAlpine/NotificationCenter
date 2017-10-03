@@ -2,14 +2,13 @@ package com.project.level4.watchnotificationtray;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.wearable.view.WearableRecyclerView;
 import android.widget.TextView;
 
 /**
  * Created by Rob on 06/02/2016.
  */
 public class WearNotificationActivity extends Activity {
-    private TextView mHeader;
-    private TextView mBody;
     private String title = null;
     private String text = null;
     static boolean active = false;
@@ -19,9 +18,6 @@ public class WearNotificationActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-
-        mHeader = (TextView) findViewById(R.id.textViewNotificationTitle);
-        mBody = (TextView) findViewById(R.id.textViewNotificationText);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -35,8 +31,10 @@ public class WearNotificationActivity extends Activity {
             } else {
                 text = "Empty";
             }
-            mHeader.setText(title);
-            mBody.setText(text);
+            WearableRecyclerView wearableRecyclerView = (WearableRecyclerView)findViewById(R.id.recycler_container_notification_view);
+            wearableRecyclerView.setCenterEdgeItems(true);
+            NotificationAdapter mAdapter = new NotificationAdapter(title, text);
+            wearableRecyclerView.setAdapter(mAdapter);
         }
     }
 
