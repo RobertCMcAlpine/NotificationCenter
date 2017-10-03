@@ -85,6 +85,7 @@ public class NotificationObject implements Serializable{
         out.writeObject(pack);
         out.writeObject(title);
         out.writeObject(text);
+        out.writeObject(read);
         if (icon != null) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -102,7 +103,7 @@ public class NotificationObject implements Serializable{
         pack = (String) in.readObject();
         title = (String) in.readObject();
         text = (String) in.readObject();
-
+        read = (boolean) in.readObject();
         BitmapDataObject bitmapDataObject = (BitmapDataObject) in.readObject();
         if (bitmapDataObject != null) {
             icon = BitmapFactory.decodeByteArray(bitmapDataObject.imageByteArray, 0, bitmapDataObject.imageByteArray.length);

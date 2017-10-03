@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 public class WearMainActivity extends Activity implements HomeAdapter.ReadReceiptInterface{
     private static final int TIMEOUT_MS = 1000;
     private static final String ACTION = "NOTIFICATION";
-//    private static final String ACTIONCOUNTER = "COUNTER";
+    private static final String SETCOUNTER = "SETCOUNTER";
     private static final String ACTIONPULL = "PULLREQUEST";
     static boolean active = false;
 
@@ -81,6 +81,7 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         super.onResume();
         active = true;
         broadcastPullRequest();
+        updateUI();
     }
 
     private void updateUI(){
@@ -88,12 +89,27 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         wearableRecyclerView.setCenterEdgeItems(true);
         HomeAdapter mAdapter = new HomeAdapter(this, notificationLL);
         wearableRecyclerView.setAdapter(mAdapter);
+        int counter = 0;
+        for (int i=0; i<notificationLL.size(); i++){
+            if (!notificationLL.get(i).readReceipt()){
+                counter = counter++;
+            }
+        }
+        broadcastCounter(counter);
+    }
+
+    public void broadcastCounter(int counter){
+        Intent counterIntent = new Intent();
+        counterIntent.setAction(SETCOUNTER);
+        counterIntent.putExtra("SETCOUNTER", counter);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(counterIntent);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         active = false;
+        writeNotificationsToInternalStorage();
     }
 
     @Override
@@ -170,7 +186,7 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
     @Override
     public void setReadReceipt(int position) {
         notificationLL.get(position).readNotification();
-        updateUI();
+        writeNotificationsToInternalStorage();
     }
 
     public class NotificationReceiver extends BroadcastReceiver {

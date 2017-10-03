@@ -25,12 +25,13 @@ import java.util.LinkedList;
  * - updates NotificationWatchFace counter
  * - updates list of notifications (dependant on limit size)
  */
-public class WearableNotificationService extends WearableListenerService {
+public class WearableNotificationService extends WearableListenerService{
 
     private static final String WEARABLE_DATA_PATH = "/wearable_data";
     private static final String ACTION = "NOTIFICATION";
     private static final String ACTIONCOUNTER = "COUNTER";
     private static final String ACTIONPULL = "PULLREQUEST";
+    private static final String SETCOUNTER = "SETCOUNTER";
     private int counter = 0;
     private static LinkedList<DataMap> unsentMaps = new LinkedList<DataMap>();
 
@@ -41,6 +42,7 @@ public class WearableNotificationService extends WearableListenerService {
         // Register the local broadcast receiver for pulling DataMaps
         IntentFilter messageFilterPull = new IntentFilter(ACTIONPULL);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mPullReceiver, messageFilterPull);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mCounterReceiver, messageFilterPull);
     }
 
     @Override
@@ -69,7 +71,8 @@ public class WearableNotificationService extends WearableListenerService {
                     }
                     if (dataMap.getString("delete") != null){
                         broadcastCounter();
-                    } else {
+                    }
+                    else {
                         counter++;
                         broadcastCounter();
                     }
@@ -112,6 +115,16 @@ public class WearableNotificationService extends WearableListenerService {
                     broadcastDataMap(unsentMaps.get(i));
                 }
                 resetMapList();
+            }
+        }
+    };
+
+    final BroadcastReceiver mCounterReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (SETCOUNTER.equals(intent.getAction())){
+                counter = intent.getIntExtra("SETCOUNTER", 0);
+                broadcastCounter();
             }
         }
     };
