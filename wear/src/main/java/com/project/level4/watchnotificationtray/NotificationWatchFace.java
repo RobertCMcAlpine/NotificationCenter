@@ -294,22 +294,13 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
             String stringCounterSmall = String.valueOf(small);
             String stringCounterBig = String.valueOf(big);
 
+            //determine watchscreen resolution and determine y axis (height) limit
             int hRes = getScreenResolution(1, getApplicationContext());
+            int wRest = getScreenResolution(0, getApplicationContext());
 
-            System.out.println("HEIGHT SIZE:" + hRes);
-
-
-            if (hRes < 300){
-                createButton(centerX, centerY+66f);
-                canvas.drawText(stringCounterSmall,centerX+5f, centerY+66f, notificationPaint);
-                canvas.drawText(stringCounterBig,centerX-9f, centerY+66f, notificationPaint);
-            } else if (hRes >300){
-                createButton(centerX, centerY+74f);
-                canvas.drawText(stringCounterSmall,centerX+5f, centerY+74f, notificationPaint);
-                canvas.drawText(stringCounterBig,centerX-9f, centerY+74f, notificationPaint);
-            }
-
-
+            createButton(centerX, (int)(hRes*0.781538));
+            canvas.drawText(stringCounterSmall,centerX+5f, (int)(hRes*0.781538), notificationPaint);
+            canvas.drawText(stringCounterBig,centerX-9f, (int)(hRes*0.781538), notificationPaint);
         }
 
         // button positioned on notification counter.

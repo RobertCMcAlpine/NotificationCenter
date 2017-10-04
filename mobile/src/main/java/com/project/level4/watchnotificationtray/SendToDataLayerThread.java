@@ -27,7 +27,6 @@ class SendToDataLayerThread extends Thread {
     }
 
     public void run() {
-        System.out.println("starting thread...");
         // Construct a DataRequest and send over the data layer
         PutDataMapRequest putDMR = PutDataMapRequest.create(path);
         putDMR.getDataMap().putAll(dataMap);
