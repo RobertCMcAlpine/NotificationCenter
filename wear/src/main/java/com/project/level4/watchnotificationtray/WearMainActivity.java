@@ -303,10 +303,7 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         }.execute(notification);
     }
 
-    /**
-     * WHERE THE MADNESS STARTS
-     */
-
+    // swipe to delete functionality
     private void setUpItemTouchHelper() {
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -392,10 +389,7 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    /**
-     * We're gonna setup another ItemDecorator that will draw the red background in the empty space while the items are animating to thier new positions
-     * after an item is removed.
-     */
+
     private void setUpAnimationDecoratorHelper() {
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
 

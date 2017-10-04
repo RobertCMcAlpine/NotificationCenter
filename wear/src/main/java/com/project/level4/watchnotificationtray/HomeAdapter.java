@@ -150,14 +150,6 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
         return position == 0;
     }
 
-    public interface ReadReceiptInterface {
-        void setReadReceipt(int position);
-    }
-
-    /**
-     * WHERE THE MADNESS STARTS
-     */
-
     public void setUndoOn(boolean undoOn) {
         this.undoOn = undoOn;
     }
@@ -199,6 +191,11 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
         NotificationObject item = menuItemsLL.get(position);
         return itemsPendingRemoval.contains(item);
     }
+
+    public interface ReadReceiptInterface {
+        void setReadReceipt(int position);
+    }
+
 }
 
 
