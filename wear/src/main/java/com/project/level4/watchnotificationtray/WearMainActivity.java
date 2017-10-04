@@ -195,6 +195,8 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         }
         catch (FileNotFoundException e) {
 //            Log.e("ReadingFile","File not found");
+            // creates file for initialisation purposes
+            writeNotificationsToInternalStorage();
             e.printStackTrace();
         }
         catch (StreamCorruptedException e) {

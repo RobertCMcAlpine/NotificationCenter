@@ -177,7 +177,7 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
     }
 
     public void remove(int position) {
-        NotificationObject item = menuItemsLL.get(position);
+        NotificationObject item = menuItemsLL.get(position-1);
         if (itemsPendingRemoval.contains(item)) {
             itemsPendingRemoval.remove(item);
         }

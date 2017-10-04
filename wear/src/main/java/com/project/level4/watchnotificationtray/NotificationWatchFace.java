@@ -124,22 +124,12 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
                         counter = 0;
                     } else {
                         counter = intent[0].getIntExtra("counter", 0);
-                        int limit = getLimit();
-                        if (counter > getLimit()){
-                            counter = limit;
-                        }
                     }
                     return null;
                 }
             }.execute(intent);
         }
 
-
-        public int getLimit(){
-            SharedPreferences sharedPref = MyApplication.preferences;
-            int limit = Integer.parseInt(sharedPref.getString(getResources().getString(R.string.limit_key), "10"));
-            return limit;
-        }
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -304,7 +294,10 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
             String stringCounterSmall = String.valueOf(small);
             String stringCounterBig = String.valueOf(big);
 
-            int hRes = getScreenResolution("h", getApplicationContext());
+            int hRes = getScreenResolution(1, getApplicationContext());
+
+            System.out.println("HEIGHT SIZE:" + hRes);
+
 
             if (hRes < 300){
                 createButton(centerX, centerY+66f);
@@ -412,7 +405,7 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
         }
     }
 
-    private static int getScreenResolution(String det, Context context) {
+    private static int getScreenResolution(int axis, Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -421,9 +414,10 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
         int height = metrics.heightPixels;
 
 
-        if (det.contentEquals("w")) {
+        if (axis == 0) {
             return width;
-        } else
+        } else if (axis == 1)
             return height;
+        return 0;
     }
 }
