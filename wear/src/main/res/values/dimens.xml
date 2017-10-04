@@ -3,4 +3,5 @@
     <dimen name="analog_hand_stroke">3dp</dimen>
     <dimen name="small_circle_radius">22dp</dimen>
     <dimen name="big_circle_radius">25dp</dimen>
+    <dimen name="ic_clear_margin">16dp</dimen>
 </resources>

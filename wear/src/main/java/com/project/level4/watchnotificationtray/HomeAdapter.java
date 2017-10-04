@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.wearable.view.CircledImageView;
 import android.support.wearable.view.WearableRecyclerView;
 import android.view.LayoutInflater;
@@ -11,13 +12,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Rob on 9/27/17.
  */
 
 public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerView.ViewHolder>{
+
+    private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
+
+    private List<NotificationObject> itemsPendingRemoval = new LinkedList<NotificationObject>();
+    private boolean undoOn; // is undo on, you can turn it on from the toolbar menu
+    private Handler handler = new Handler(); // hanlder for running delayed runnables
+    private HashMap<NotificationObject, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
@@ -143,5 +154,51 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
         void setReadReceipt(int position);
     }
 
+    /**
+     * WHERE THE MADNESS STARTS
+     */
+
+    public void setUndoOn(boolean undoOn) {
+        this.undoOn = undoOn;
+    }
+
+    public boolean isUndoOn() {
+        return undoOn;
+    }
+
+    public void pendingRemoval(int position) {
+        final NotificationObject item = menuItemsLL.get(position);
+        if (!itemsPendingRemoval.contains(item)) {
+            itemsPendingRemoval.add(item);
+            // this will redraw row in "undo" state
+            notifyItemChanged(position-1);
+            // let's create, store and post a runnable to remove the item
+            Runnable pendingRemovalRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    remove(menuItemsLL.indexOf(item));
+                }
+            };
+            handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
+            pendingRunnables.put(item, pendingRemovalRunnable);
+        }
+    }
+
+    public void remove(int position) {
+        NotificationObject item = menuItemsLL.get(position);
+        if (itemsPendingRemoval.contains(item)) {
+            itemsPendingRemoval.remove(item);
+        }
+        if (menuItemsLL.contains(item)) {
+            menuItemsLL.remove(position-1);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public boolean isPendingRemoval(int position) {
+        NotificationObject item = menuItemsLL.get(position);
+        return itemsPendingRemoval.contains(item);
+    }
 }
+
 
