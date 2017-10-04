@@ -58,6 +58,19 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
 
         if (!notificationLL.isEmpty()) {
             updateUI();
+            // restore UI
+        } else {
+            //initialise UI
+            NotificationObject initNotification = new NotificationObject();
+            initNotification.setPack("com.project.level4.watchnotificationtray");
+            initNotification.setTitle("Empty");
+            initNotification.setText("Empty notification history, any new notifications will be saved here.\n\n " +
+                    "Swipe notifications to delete them from the Notification History.\n\n" +
+                    "To change settings use the companion mobile app.");
+            Bitmap icon = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_settings);
+            initNotification.setIcon(icon);
+            notificationLL.add(initNotification);
+            updateUI();
         }
 
         // Retrieve any notifications that were received when
@@ -89,13 +102,6 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         wearableRecyclerView.setCenterEdgeItems(true);
         HomeAdapter mAdapter = new HomeAdapter(this, notificationLL);
         wearableRecyclerView.setAdapter(mAdapter);
-        int counter = 0;
-        for (int i=0; i<notificationLL.size(); i++){
-            if (!notificationLL.get(i).readReceipt()){
-                counter = counter++;
-            }
-        }
-        broadcastCounter(counter);
     }
 
     public void broadcastCounter(int counter){
@@ -103,6 +109,25 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         counterIntent.setAction(SETCOUNTER);
         counterIntent.putExtra("SETCOUNTER", counter);
         LocalBroadcastManager.getInstance(this).sendBroadcast(counterIntent);
+    }
+
+    public void broadcastPullRequest(){
+        Intent pullIntent = new Intent();
+        pullIntent.setAction(ACTIONPULL);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(pullIntent);
+    }
+
+    @Override
+    public void setReadReceipt(int position) {
+        notificationLL.get(position).readNotification();
+        writeNotificationsToInternalStorage();
+        int counter = 0;
+        for (int i=0; i<notificationLL.size(); i++){
+            if (!notificationLL.get(i).readReceipt()){
+                counter = counter++;
+            }
+        }
+        broadcastCounter(counter);
     }
 
     @Override
@@ -175,18 +200,6 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
 
         }
 
-    }
-
-    public void broadcastPullRequest(){
-        Intent pullIntent = new Intent();
-        pullIntent.setAction(ACTIONPULL);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(pullIntent);
-    }
-
-    @Override
-    public void setReadReceipt(int position) {
-        notificationLL.get(position).readNotification();
-        writeNotificationsToInternalStorage();
     }
 
     public class NotificationReceiver extends BroadcastReceiver {

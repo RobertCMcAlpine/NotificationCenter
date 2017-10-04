@@ -42,7 +42,9 @@ public class WearableNotificationService extends WearableListenerService{
         // Register the local broadcast receiver for pulling DataMaps
         IntentFilter messageFilterPull = new IntentFilter(ACTIONPULL);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mPullReceiver, messageFilterPull);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mCounterReceiver, messageFilterPull);
+        // Register the local broadcast receiver for counter updates
+        IntentFilter counterFilter = new IntentFilter(SETCOUNTER);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mCounterReceiver, counterFilter);
     }
 
     @Override

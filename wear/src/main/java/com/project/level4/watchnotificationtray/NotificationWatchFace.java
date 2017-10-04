@@ -123,7 +123,7 @@ public class NotificationWatchFace extends CanvasWatchFaceService {
                     if (intent[0].getIntExtra("counter", 0) == 0){
                         counter = 0;
                     } else {
-                        counter = counter + intent[0].getIntExtra("counter", 0);
+                        counter = intent[0].getIntExtra("counter", 0);
                         int limit = getLimit();
                         if (counter > getLimit()){
                             counter = limit;

@@ -64,11 +64,11 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
         }
 
         public void setUnreadColor(){
-            itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_color, null));
+            notificationView.setBackgroundColor(context.getResources().getColor(R.color.unread_color, null));
         }
 
         public void setReadColor(){
-            itemView.setBackgroundColor(context.getResources().getColor(android.R.color.transparent, null));
+            notificationView.setBackgroundColor(context.getResources().getColor(android.R.color.transparent, null));
         }
     }
 
@@ -106,9 +106,13 @@ public class HomeAdapter extends WearableRecyclerView.Adapter<WearableRecyclerVi
                 vh.title.setText(item.getTitle());
                 Drawable drawableIcon = new BitmapDrawable(context.getResources(), item.getIcon());
                 vh.icon.setImageDrawable(drawableIcon);
-                if (!item.readReceipt()){ ((ItemHolder) holder).setUnreadColor();}
-                else if (item.readReceipt()){ ((ItemHolder) holder).setReadColor();}
-                else { ((ItemHolder) holder).setUnreadColor();}
+                if (!item.readReceipt()){
+                    ((ItemHolder) holder).setUnreadColor();
+                }
+                else if (item.readReceipt()){
+                    ((ItemHolder) holder).setReadColor();
+                    ((WearMainActivity) context.getApplicationContext()).setReadReceipt(position-1);
+                }
             } else if (holder instanceof HeaderViewHolder) {
                 HeaderViewHolder vh = (HeaderViewHolder) holder;
             }
