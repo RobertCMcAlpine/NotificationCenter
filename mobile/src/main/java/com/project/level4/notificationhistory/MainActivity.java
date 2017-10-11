@@ -1,7 +1,9 @@
 package com.project.level4.notificationhistory;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -15,6 +17,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,8 +42,6 @@ import java.util.List;
  */
 
 
-//TODO sort orientation change problems.
-
 public class MainActivity extends PreferenceActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -50,6 +51,14 @@ public class MainActivity extends PreferenceActivity implements GoogleApiClient.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ComponentName cn = new ComponentName(this, NotificationListener.class);
+        String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
+        final boolean enabled = flat != null && flat.contains(cn.flattenToString());
+
+        if (!enabled){
+            startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+        }
 
         googleClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
