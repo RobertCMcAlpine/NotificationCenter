@@ -137,9 +137,11 @@ public class WearMainActivity extends Activity implements HomeAdapter.ReadReceip
         notificationLL.get(position).readNotification();
         writeNotificationsToInternalStorage();
         int counter = 0;
-        for (int i=0; i<notificationLL.size(); i++){
-            if (!notificationLL.get(i).readReceipt()){
-                counter = counter++;
+        if (notificationLL != null) {
+            for (int i = 0; i < notificationLL.size(); i++) {
+                if (!notificationLL.get(i).readReceipt()) {
+                    counter = counter++;
+                }
             }
         }
         SharedPreferences preferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
